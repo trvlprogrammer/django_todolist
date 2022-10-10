@@ -41,18 +41,31 @@
 					<div class="col-7">
 						<p>{{todo.body}}</p>
 					</div>   
-					<div class="col-4 ">
-						<div class="float-right mr-3 row">
-						<div class="col-4 mr-3">
-							<button id="btn_update_todo_mdl" onclick="updateTodoModal('{{todo.body}}', `{{todo.datetime_todo|date:'Y-m-d H:i'}}`,`{% url 'todos:update_todo' todo.id %}`)"  type="button" class="btn btn-outline-info btn-sm " data-toggle="modal" data-target="#update_todo_modal" >
-								Update
-							</button>
-						</div> 
-						<div class="col-4 mr-3">
-							<button id="btn_delete_tag_mdl" onclick="deleteTodoModal('{{todo.body}}',`{% url 'todos:delete_todo' todo.id %}`)" type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete_todo_modal">
-								Delete
-							</button>                    
-						</div>
+					<div class="col-5 ">
+						<div class="row">
+							<div class="col-2 mr-3">
+								<form method="POST" action="{% url 'todos:archive_todo' todo.id  page_name %}">
+									{% csrf_token %}
+									<button id="" type="submit" class="btn btn-outline-success btn-sm">
+										{% if todo.active == True %}
+											Active
+										{% else %}
+											Inactive
+										{% endif %}
+									</button>
+								</form>
+								                    
+							</div>	
+							<div class="col-2 ml-3 mr-4">
+								<button id="btn_update_todo_mdl" onclick="updateTodoModal('{{todo.body}}', `{{todo.datetime_todo|date:'Y-m-d H:i'}}`,`{% url 'todos:update_todo' todo.id %}`)"  type="button" class="btn btn-outline-info btn-sm " data-toggle="modal" data-target="#update_todo_modal" >
+									Update
+								</button>
+							</div> 
+							<div class="col-2">
+								<button id="btn_delete_tag_mdl" onclick="deleteTodoModal('{{todo.body}}',`{% url 'todos:delete_todo' todo.id %}`)" type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete_todo_modal">
+									Delete
+								</button>                    
+							</div>						
 					</div>          
 					</div>   
 				</div>                                   

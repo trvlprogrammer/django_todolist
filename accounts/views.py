@@ -10,6 +10,6 @@ def register(request):
         if form.is_valid:
             user = form.save()
             login(request,user)
-            return redirect("accounts:home")    
+            return redirect("todos:index")    
     form = SignUpForm()
     return render (request=request, template_name="accounts/register_form.html", context={"form" : form})

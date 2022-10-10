@@ -1,11 +1,12 @@
 from django.views.generic import (
     CreateView,
     DeleteView, 
-    UpdateView
+    UpdateView,
+    ListView
     )
 from .models import Tag, Todo 
 from .forms import TagForm, TodoForm, TodoUpdateForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, resolve
 from django.core.paginator import Paginator
 
 
@@ -56,6 +57,7 @@ class TodosCreateAndListView(CreateView):
         paginator = Paginator(todos, self.paginate_by)
         todos = paginator.get_page(page)
         
+        context["page_name"] = "index" 
         context["todos"] = todos               
         context["prev_url"] = todos.previous_page_number() if todos.has_previous() else None
         context["next_url"] = todos.next_page_number() if todos.has_next() else None
@@ -81,6 +83,47 @@ class TodoUpdateView(UpdateView):
     model = Todo
     form_class = TodoUpdateForm
     success_url = reverse_lazy("todos:index")
+
+
+class TodoAchiveView(UpdateView):
+    model = Todo
+    fields = ["active"]
+    success_url = "/"
+    
+    def form_valid(self, form):
+        try :
+            form.instance.active = not Todo.objects.get(id=form.instance.id).active
+        except:
+            form.instance.active = not form.instance.id
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        if self.kwargs.get("name") and self.kwargs.get("name") == "index":
+            return reverse_lazy("todos:index")
+        else :
+            return reverse_lazy("todos:todos_archive")
+
+
+
+
+class TodoArchiveView(ListView):
+    template_name = "todos/index.html"
+    model = Todo
+    paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page = self.request.GET.get('page', 1)
+        todos = self.model.objects.filter(user_id=self.request.user, active=False).order_by('-id')
+        paginator = Paginator(todos, self.paginate_by)
+        todos = paginator.get_page(page)
+        
+        context["todos"] = todos  
+        context["page_name"] = "archive"             
+        context["prev_url"] = todos.previous_page_number() if todos.has_previous() else None
+        context["next_url"] = todos.next_page_number() if todos.has_next() else None
+
+        return context
 
 
     

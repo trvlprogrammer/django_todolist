@@ -7,7 +7,9 @@ app_name = "todos"
 
 urlpatterns = [
     path("", login_required(views.TodosCreateAndListView.as_view()), name="index"),
+    path("todos/archive", login_required(views.TodoArchiveView.as_view()), name="todos_archive"),
     path("todo/<pk>/update/", login_required(views.TodoUpdateView.as_view()), name="update_todo"),
+    path("todo/<pk>/archive/<str:name>", login_required(views.TodoAchiveView.as_view()), name="archive_todo"),
     path("todo/<pk>/delete/", login_required(views.TodoDeleteView.as_view()), name="delete_todo"),
     path("tags/", login_required(views.TagsCreateAndListView.as_view()), name="tags"),
     path("tag/<pk>/delete/", login_required(views.TagDeleteView.as_view()), name="delete_tag"),
