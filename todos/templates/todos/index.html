@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+	Index
+{% endblock page_title %}
+
+
+{% block contents %}
+	<h1>Todo List</h1>	
+
+	{% if form %}    
+    <form method="POST" id="postid" action=".">
+		{% csrf_token %}
+        <div class="form-group">
+			<label for="{{form.body.id_for_label}}">Todo</label>
+			<input type="text" name = "{{form.body.name}}" class="form-control" id="text" aria-describedby="text" placeholder="Enter Todo">         
+		</div>
+		<div class="row">
+			<div class="col">
+			  <div class="form-group">
+				<label for="{{ form.datetime_todo.id_for_label }}">{{form.datetime_todo.label}}</label>
+				<input type="datetime-local" name = "{{form.datetime_todo.name}}" class="form-control" id="text" aria-describedby="text" placeholder="Datetime"> 
+			  </div>                     
+			</div>
+			<div class="col">
+			  <div class="form-group">
+				  <label for="{{ form.tags.id_for_label }}">{{form.tags.label}}</label>
+				  {{form.tags}}
+			  </div>     
+			</div>
+		  </div>
+		<button type="submit" class="btn btn-secondary btn-sm">Submit</button>                 
+    </form>    
+    {% endif %}
+
+	{% for todo in todos %}
+	<div class="pt-3">
+		<div class="card border-success">
+			<div class="card-body">  
+				<div class="row">
+					<div class="col-7">
+						<p>{{todo.body}}</p>
+					</div>   
+					<div class="col-4 ">
+						<div class="float-right mr-3 row">
+						<div class="col-4 mr-3">
+							<button id="btn_update_todo_mdl" onclick="updateTodoModal('{{todo.body}}', `{{todo.datetime_todo|date:'Y-m-d H:i'}}`,`{% url 'todos:update_todo' todo.id %}`)"  type="button" class="btn btn-outline-info btn-sm " data-toggle="modal" data-target="#update_todo_modal" >
+								Update
+							</button>
+						</div> 
+						<div class="col-4 mr-3">
+							<button id="btn_delete_tag_mdl" onclick="deleteTodoModal('{{todo.body}}',`{% url 'todos:delete_todo' todo.id %}`)" type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete_todo_modal">
+								Delete
+							</button>                    
+						</div>
+					</div>          
+					</div>   
+				</div>                                   
+				<div class="row">
+					<div class="col">
+						<!-- <span>{{ todo.datetime_todo|date:'Y-m-d H:i:s' }}</span> -->
+						<span>{{ todo.datetime_todo|date:'d/m/Y H:i:s' }}</span>
+					</div>
+					<div class="col">
+						{% for tag in todo.tags.all %}
+						<span class="badge badge-info">{{tag.name}}</span>
+						{% endfor %}
+					</div>
+				</div>                                      
+			</div>
+		  </div>
+	</div>
+	
+	{% endfor %}
+	<div class="pt-2">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            {% if prev_url %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ prev_url }}" aria-label="Previous">            
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" aria-label="Previous">            
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% endif %}
+            {% if next_url %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ next_url }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>       
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">            
+                  <span aria-hidden="true">&raquo;</span>     
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+
+	  <div class="modal fade" id="update_todo_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" >Update</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form name="update_todo" id="mdl_todo_update_form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="body">Todo</label>
+                      <input type="text" name = "body" class="form-control" value="" id="mdl_todo_update_body" aria-describedby="text" placeholder="Enter Todo">         
+                    </div>
+					<div class="form-group">
+						<label for="datetime_todo">Datetime</label>
+						<input type="datetime-local" name = "datetime_todo" class="form-control" value="" id="mdl_todo_update_datetime_todo">         
+					  </div>					  
+                    <div class="float-right">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                    </div>
+                </form> 
+            </div>
+          </div>
+        </div>
+    </div>
+
+	<div class="modal fade" id="delete_todo_modal" tabindex="-1" role="dialog" >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Delete</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id = "delete_todo_modal_body">              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+              <form name="delete_tag" id="mdl_todo_delete_form" method="post">
+                {% csrf_token %}
+                <input class="btn btn-outline-danger btn-sm" type="submit" value="Delete">
+            </form> 
+            </div>
+          </div>
+        </div>
+    </div>
+	
+{% endblock contents %}
+
+
+{% block script %}
+<script> 
+
+function  updateTodoModal(body,datetime,action_url){
+  	$("#mdl_todo_update_body").val(body)
+  	$("#mdl_todo_update_datetime_todo").val(datetime)
+  	$("#mdl_todo_update_form").attr('action',action_url);
+  
+}
+
+function deleteTodoModal(body, action_url){
+  	$("#delete_todo_modal_body").html(`Are you sure want to delete todo <strong> ${body}</strong> ?`)
+  	$("#mdl_todo_delete_form").attr('action',action_url);
+}    
+</script>  
+{% endblock script %}

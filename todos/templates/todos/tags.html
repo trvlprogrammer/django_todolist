@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+	Tags
+{% endblock page_title %}
+
+
+{% block contents %}
+	<h1>Tags</h1>	
+
+    {% if form %} 
+
+    <form method="POST" id="tagform" action=".">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{form.name.id_for_label}}">{{form.name.label}}</label>
+          <input type="text" name = "{{form.name.name}}" class="form-control" id="text" aria-describedby="text" placeholder="Enter Tag">         
+        </div>
+        <button type="submit" class="btn btn-secondary btn-sm">Submit</button>
+      </form>
+      <br/>
+    {% endif %}
+    {% for tag in tags %}
+    <div class="card border-success">
+        <div class="row my-3">
+            <div class="col-8"><span class="ml-3">{{tag.name}}</span></div>
+            <div class="col-4 ">
+                <div class="float-right mr-3 row">
+                <div class="col-4 mr-3">
+                    <button id="btn_update_tag_mdl" onclick="updateTagModal('{{tag.name}}',`{% url 'todos:update_tag' tag.id %}`)" type="button" class="btn btn-outline-info btn-sm " data-toggle="modal" data-target="#update_tag_modal" >
+                        Update
+                    </button>
+                </div> 
+                <div class="col-4 mr-3">
+                    <button id="btn_delete_tag_mdl" onclick="deleteTagModal('{{tag.name}}',`{% url 'todos:delete_tag' tag.id %}`)" type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete_tag_modal">
+                        Delete
+                    </button>                    
+                </div>  
+            </div>          
+            </div>
+          </div>
+      </div>
+      <br/>
+    {% endfor %}
+
+    <div class="pt-2">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            {% if prev_url %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ prev_url }}" aria-label="Previous">            
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#" aria-label="Previous">            
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% endif %}
+            {% if next_url %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ next_url }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>       
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">            
+                  <span aria-hidden="true">&raquo;</span>     
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+
+<!-- modal -->
+      <div class="modal fade" id="update_tag_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Update</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form name="update_tag" id="mdl_tag_update_form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="name">Name</label>
+                      <input type="text" name = "name" class="form-control" value="" id="mdl_tag_update_name" aria-describedby="text" placeholder="Enter Tag">         
+                    </div>
+                    <div class="float-right">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                    </div>
+                </form> 
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="delete_tag_modal" tabindex="-1" role="dialog" >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Delete</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="delete_tag_modal_body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+              <form name="delete_tag" id="mdl_tag_delete_form" method="post">
+                {% csrf_token %}
+                <input class="btn btn-outline-danger btn-sm" type="submit" value="Delete">
+            </form> 
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock contents %}
+
+{% block script %}
+<script> 
+
+function  updateTagModal(name,action_url){
+  $("#mdl_tag_update_name").val(name)
+  $("#mdl_tag_update_form").attr('action',action_url);
+}
+
+function deleteTagModal(name,action_url){
+  $("#delete_tag_modal_body").html(`Are you sure want to delete tag <strong> ${name}</strong> ?`)
+  $("#mdl_tag_delete_form").attr('action',action_url);
+}    
+</script>  
+{% endblock script %}
