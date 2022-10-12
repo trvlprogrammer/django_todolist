@@ -1,3 +1,5 @@
+from audioop import reverse
+from django.shortcuts import HttpResponseRedirect
 from django.views.generic import (
     CreateView,
     DeleteView, 
@@ -6,10 +8,11 @@ from django.views.generic import (
     )
 from .models import Tag, Todo 
 from .forms import TagForm, TodoForm, TodoUpdateForm
-from django.urls import reverse_lazy, resolve
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator
-
-
+from django.shortcuts import redirect
+import csv
+from django.http import HttpResponse
 class TagsCreateAndListView(CreateView):
     template_name = "todos/tags.html"
     form_class = TagForm
@@ -66,8 +69,8 @@ class TodosCreateAndListView(CreateView):
     
     def form_valid(self, form):
         form.instance.user_id = self.request.user
-        if form.instance.datetime_todo :
-            form.instance.datetime_todo = form.instance.datetime_todo.utcnow()
+        # if form.instance.datetime_todo :
+        #     form.instance.datetime_todo = form.instance.datetime_todo.utcnow()
         return super().form_valid(form)
 
     def get_initial(self):   
@@ -83,7 +86,6 @@ class TodoUpdateView(UpdateView):
     model = Todo
     form_class = TodoUpdateForm
     success_url = reverse_lazy("todos:index")
-
 
 class TodoAchiveView(UpdateView):
     model = Todo
@@ -102,9 +104,6 @@ class TodoAchiveView(UpdateView):
             return reverse_lazy("todos:index")
         else :
             return reverse_lazy("todos:todos_archive")
-
-
-
 
 class TodoArchiveView(ListView):
     template_name = "todos/index.html"
@@ -126,4 +125,56 @@ class TodoArchiveView(ListView):
         return context
 
 
+def export_todos_csv(request):
+    request.user.username
+    file_name = "todos_{}".format(request.user.username)
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': 'attachment; filename="{}.csv"'.format(file_name)},
+    )
+    todos = Todo.objects.filter(user_id=request.user)
+    writer = csv.writer(response)
+    writer.writerow(['Todo', 'Active', 'Datetime', 'Tags'])
+    for todo in todos:
+        
+        writer.writerow([todo.body, todo.active, todo.datetime_todo.strftime("%d-%m-%Y %H:%M:%S"), ",".join([tag.name for tag in todo.tags.all()])])
+
+    return response
+
+
     
+def import_todos_csv(request):
+    try :
+        if request.method == 'POST' and request.FILES['file']:
+            print("a")
+            csv_file = request.FILES["file"]
+            file_data = csv_file.read().decode("utf-8")
+            lines = file_data.split("\n")
+            print(lines)
+            for line in lines :
+                if len(line)>0:
+                    fields = line.split(",")
+                    data_dict = {}
+                    data_dict["body"] = fields[0]
+                    data_dict["datetime_todo"] = fields[1]
+                    # data_dict["tags"] = fields[2]
+                    try:
+                        form = TodoForm(data_dict)
+                        if form.is_valid():
+                            form.instance.user_id = request.user
+                            # if form.instance.datetime_todo :
+                            #     form.instance.datetime_todo = form.instance.datetime_todo.utcnow()
+                            form.save()					
+                                                            
+                    except Exception as e:
+                        print(e)				
+                        pass
+
+            return redirect("todos:index")
+        else :
+            return redirect("todos:index")
+    except Exception as e :
+        print(e)
+    
+    
+

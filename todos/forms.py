@@ -9,6 +9,8 @@ class TagForm(forms.ModelForm):
 
 
 class TodoForm(forms.ModelForm):
+
+    tags = forms.MultipleChoiceField(required=False)
     class Meta:
         model = Todo
         fields=('body','datetime_todo','tags')

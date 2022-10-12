@@ -6,7 +6,17 @@
 
 
 {% block contents %}
-	<h1>Todo List</h1>	
+<div class="row">
+	<div class="col-sm">
+	  <h1>Todo List</h1>
+	</div>
+	<div class="col-sm">
+	  <div class="float-right pt-2">
+		<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#importModal">Import</button>
+		<a class="btn btn-outline-secondary btn-sm" href="{% url 'todos:export_todos' %}">Export</a>
+	  </div>        
+	</div>  
+  </div> 
 
 	{% if form %}    
     <form method="POST" id="postid" action=".">
@@ -46,13 +56,13 @@
 							<div class="col-2 mr-3">
 								<form method="POST" action="{% url 'todos:archive_todo' todo.id  page_name %}">
 									{% csrf_token %}
-									<button id="" type="submit" class="btn btn-outline-success btn-sm">
+									
 										{% if todo.active == True %}
-											Active
+										<button id="" type="submit" class="btn btn-outline-success btn-sm button-active"></button>
 										{% else %}
-											Inactive
+										<button id="" type="submit" class="btn btn-outline-success btn-sm button-inactive"></button>
 										{% endif %}
-									</button>
+									
 								</form>
 								                    
 							</div>	
@@ -169,6 +179,39 @@
           </div>
         </div>
     </div>
+
+
+	<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="exampleModalLabel">Please Select File</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+				<form method="post" id="uploadtodoid" enctype="multipart/form-data" action="{% url 'todos:import_todos' %}">					
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="name" class="col-md-3 col-sm-3 col-xs-12 control-label">File: </label>
+						<div class="col-md-8">
+							<input type="file" name="file" required="True" class="form-control">
+						</div>                    
+					</div>
+					<div class="form-group">                    
+						<div class="col-md-3 col-sm-3 col-xs-12 col-md-offset-3" style="margin-bottom:10px;">
+							<button class="btn btn-primary"> <span class="glyphicon glyphicon-upload" style="margin-right:5px;"></span>Upload </button>
+						</div> 
+					</div>                
+				</form>
+			</div>
+			<div class="modal-footer">
+			  <a class="" href="">Download template import</a>
+			</div>
+		  </div>
+		</div>
+	  </div>
 	
 {% endblock contents %}
 
