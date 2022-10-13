@@ -1,0 +1,10 @@
+{% autoescape off %}
+Hello {{username}},
+
+Here is you export csv
+
+
+Sincerely,
+The Website Team
+
+{% endautoescape %}

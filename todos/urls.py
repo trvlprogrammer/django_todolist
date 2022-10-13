@@ -13,6 +13,7 @@ urlpatterns = [
     path("todo/<pk>/delete/", login_required(views.TodoDeleteView.as_view()), name="delete_todo"),
     path("todos/export", views.export_todos_csv, name="export_todos"),
     path("todos/import", views.import_todos_csv, name="import_todos"),
+    path("todos/export-email", views.export_and_email, name="export_email_todos"),
 
     path("tags/", login_required(views.TagsCreateAndListView.as_view()), name="tags"),
     path("tag/<pk>/delete/", login_required(views.TagDeleteView.as_view()), name="delete_tag"),

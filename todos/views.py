@@ -13,6 +13,11 @@ from django.core.paginator import Paginator
 from django.shortcuts import redirect
 import csv
 from django.http import HttpResponse
+from io import StringIO 
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+
+
 class TagsCreateAndListView(CreateView):
     template_name = "todos/tags.html"
     form_class = TagForm
@@ -126,7 +131,6 @@ class TodoArchiveView(ListView):
 
 
 def export_todos_csv(request):
-    request.user.username
     file_name = "todos_{}".format(request.user.username)
     response = HttpResponse(
         content_type='text/csv',
@@ -157,13 +161,10 @@ def import_todos_csv(request):
                     data_dict = {}
                     data_dict["body"] = fields[0]
                     data_dict["datetime_todo"] = fields[1]
-                    # data_dict["tags"] = fields[2]
                     try:
                         form = TodoForm(data_dict)
                         if form.is_valid():
                             form.instance.user_id = request.user
-                            # if form.instance.datetime_todo :
-                            #     form.instance.datetime_todo = form.instance.datetime_todo.utcnow()
                             form.save()					
                                                             
                     except Exception as e:
@@ -176,5 +177,18 @@ def import_todos_csv(request):
     except Exception as e :
         print(e)
     
-    
 
+def export_and_email(request):
+    file_name = "todos_{}".format(request.user.username)
+    todos = Todo.objects.filter(user_id=request.user)
+    csvfile = StringIO()
+    writer = csv.writer(csvfile)
+    writer.writerow(['Todo', 'Active', 'Datetime', 'Tags'])
+    for todo in todos:        
+        writer.writerow([todo.body, todo.active, todo.datetime_todo.strftime("%d-%m-%Y %H:%M:%S"), ",".join([tag.name for tag in todo.tags.all()])])
+    
+    email = render_to_string("todos/export_todo_email_template.txt", {"username" : request.user.username})
+    message = EmailMessage("Export todo list csv",email,"alfatihridho@gmail.com",[request.user.email])
+    message.attach(file_name, csvfile.getvalue(), 'text/csv')
+    message.send()
+    return redirect("todos:index")

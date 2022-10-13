@@ -15,6 +15,7 @@
 	  <div class="float-right pt-2">
 		<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#importModal">Import</button>
 		<a class="btn btn-outline-secondary btn-sm" href="{% url 'todos:export_todos' %}">Export</a>
+		<a class="btn btn-outline-secondary btn-sm" href="{% url 'todos:export_email_todos' %}">Export & email</a>
 	  </div>        
 	</div>  
   </div> 
@@ -82,7 +83,6 @@
 				</div>                                   
 				<div class="row">
 					<div class="col">
-						<!-- <span>{{ todo.datetime_todo|date:'Y-m-d H:i:s' }}</span> -->
 						<span>{{ todo.datetime_todo|date:'d/m/Y H:i:s' }}</span>
 					</div>
 					<div class="col">
@@ -194,10 +194,8 @@
 			<div class="modal-body">
 				<form method="post" id="uploadtodoid" enctype="multipart/form-data" action="{% url 'todos:import_todos' %}">					
 					{% csrf_token %}
-					<div class="form-group">
-						
-							<input type="file" name="file" required="True" class="form-control-file">
-						                    
+					<div class="form-group">						
+							<input type="file" name="file" required="True" class="form-control-file">						                    
 					</div>
 					<div class="form-group">                    
 						<div class="" style="margin-bottom:10px;">
