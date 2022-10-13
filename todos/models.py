@@ -19,7 +19,7 @@ class Todo(models.Model):
     body = models.CharField(max_length=200)
     datetime_todo = models.DateTimeField(null=True)
     active = models.BooleanField(default=True)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag,blank=True)
 
     class Meta:
        indexes = [

@@ -166,7 +166,8 @@ def import_todos_csv(request):
                         if form.is_valid():
                             form.instance.user_id = request.user
                             form.save()					
-                                                            
+                        else :
+                            print(form.errors)               
                     except Exception as e:
                         print(e)				
                         pass

@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block page_title %}
+	404
+{% endblock page_title %}
+
+{% block contents %}
+<h1>URL Not Found</h1>
+<p>
+    Go back <a href="{% url 'todos:index' %}">Home</a>
+</p>
+{% endblock contents %}

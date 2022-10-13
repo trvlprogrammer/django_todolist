@@ -27,9 +27,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 EXPORT_PATH = os.environ.get('EXPORT_PATH')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
-    'todos.apps.TodosConfig'
+    'todos.apps.TodosConfig',
+    'handlers.apps.HandlersConfig',
 ]
 
 MIDDLEWARE = [
