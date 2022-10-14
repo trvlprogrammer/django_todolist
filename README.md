@@ -9,6 +9,7 @@ Feature on this app:
 6. Export and email CSV
 7. Logging
 8. Handler for 404 and 500
+9. Fetch many2many data in tag view
 
 
 
