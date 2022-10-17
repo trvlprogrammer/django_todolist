@@ -1,4 +1,3 @@
-from audioop import reverse
 from django.shortcuts import HttpResponseRedirect
 from django.views.generic import (
     CreateView,
@@ -16,14 +15,16 @@ from django.http import HttpResponse
 from io import StringIO 
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
-
-class TagsCreateAndListView(CreateView):
+class TagsCreateAndListView(SuccessMessageMixin, CreateView):
     template_name = "todos/tags.html"
     form_class = TagForm
     model = Tag
     paginate_by = 5
     success_url = reverse_lazy("todos:tags")
+    success_message = 'Success create Tag'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,21 +43,24 @@ class TagsCreateAndListView(CreateView):
         form.instance.user_id = self.request.user
         return super().form_valid(form)
 
-class TagDeleteView(DeleteView):
+class TagDeleteView(SuccessMessageMixin, DeleteView):
     model = Tag
     success_url = reverse_lazy("todos:tags")
+    success_message = 'Success delete tag'
 
-class TagUpdateView(UpdateView):
+class TagUpdateView(SuccessMessageMixin, UpdateView):
     model = Tag
     form_class = TagForm
     success_url = reverse_lazy("todos:tags")
+    success_message = 'Success update tag'
 
-class TodosCreateAndListView(CreateView):
+class TodosCreateAndListView(SuccessMessageMixin, CreateView):
     template_name = "todos/index.html"
     form_class = TodoForm
     model = Todo
     paginate_by = 5
     success_url = reverse_lazy("todos:index")
+    success_message = 'Success create todo'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -83,19 +87,23 @@ class TodosCreateAndListView(CreateView):
         initial['tags_data'] = Tag.objects.filter(user_id=self.request.user)
         return initial
 
-class TodoDeleteView(DeleteView):
+
+class TodoDeleteView(SuccessMessageMixin, DeleteView):
     model = Todo
     success_url = reverse_lazy("todos:index")
+    success_message = 'Success delete todo'
 
-class TodoUpdateView(UpdateView):
+class TodoUpdateView(SuccessMessageMixin, UpdateView):
     model = Todo
     form_class = TodoUpdateForm
     success_url = reverse_lazy("todos:index")
+    success_message = 'Success update todo'
 
-class TodoAchiveView(UpdateView):
+class TodoAchiveView(SuccessMessageMixin, UpdateView):
     model = Todo
     fields = ["active"]
     success_url = "/"
+    success_message = 'Success archive todo'
     
     def form_valid(self, form):
         try :

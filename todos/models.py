@@ -17,9 +17,9 @@ class Tag(models.Model):
 class Todo(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.CharField(max_length=200)
-    datetime_todo = models.DateTimeField(null=True)
+    datetime_todo = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
-    tags = models.ManyToManyField(Tag,blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     class Meta:
        indexes = [
