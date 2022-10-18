@@ -29,5 +29,5 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
 ]
 
-# handler404  = "handlers.views.handler_404"
-# handler500 = "handlers.views.handler_500"
+handler404  = "handlers.views.handler_404"
+handler500 = "handlers.views.handler_500"

@@ -99,7 +99,7 @@ class TodoUpdateView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy("todos:index")
     success_message = 'Success update todo'
 
-class TodoAchiveView(SuccessMessageMixin, UpdateView):
+class TodoArchiveView(SuccessMessageMixin, UpdateView):
     model = Todo
     fields = ["active"]
     success_url = "/"

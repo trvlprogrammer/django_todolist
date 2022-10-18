@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Tag(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -15,7 +15,7 @@ class Tag(models.Model):
         return self.name
 
 class Todo(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     body = models.CharField(max_length=200)
     datetime_todo = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
